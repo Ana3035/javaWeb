@@ -1,0 +1,159 @@
+-- auto-generated definition
+create schema Ana1 collate utf8_general_ci;
+show databases ;#表示的是查看所有的数据库
+create database info;
+show create database info;#表示查看之前创建的数据库
+alter database info character set utf8;
+drop database info;
+select database();#表示查看当前的数据库
+use Ana1;
+#varchar表示的是string
+create table info(username varchar(10),password varchar(10));
+show tables ;
+drop table info;
+desc students;
+alter table students add image blob;
+alter table students modify scontend varchar(30);
+alter table students drop image;#删除列的时候一次只能删除一个
+rename table students to students;#表示的是修改表的名字
+show create table students;#查看创建表的细节
+alter table students character set gbk;#修改表的字符集
+alter table students change scontend scontent varchar(100);#修改列名
+
+#DML操作
+#   插入
+use info;
+desc info;
+insert into info(id,username, password) VALUES(1,'ana','123'),(2,'nancy','234'),(3,'huo','345');#记住使用的是单引号
+alter table info add id int ;
+select * from info;#表示查看当前所有的行
+#一次添加多条数据的时候,直接在后面的括号后面再加上括号
+show variables like 'character%';#查看数据库编码的具体信息
+set names 'gbk';#修改编码
+# 修改
+update info set password='345' where password='123';#修改表里面的某个值
+# 删除
+delete from info where id=1;
+delete from info;
+truncate table info;#表示删除表里面所有的记录
+
+#DQL 查询
+select username from info where password='234' and id=2;#显示出来的只有选择的那一列
+select username from info where password='234' or id=3;#显示出来的只有选择的那一列
+select 10+5;#直接表示的就是计算
+select username from info where password not in ('123');
+select username from info where id is null;
+select username from info where id>=1 and id<=3;
+select username from info where id between 1 and 3;
+select username from info where password='234' and id between 1 and 3;
+    #模糊查询
+# _表示任意一个字母  %表示任意0-n个字母
+select username from info where password like '1%';
+select * from info where username like '%a%';
+select * from info where username like '_a%';#第二个字母是a
+
+# 去掉重复值
+select distinct username from info;
+# 查看两列之和
+select *,password+id from info;
+select *,password+ifnull(id,0) from info;#表示的是将id中的null转换成0
+select *,password+id as total from info;#修改列的名字
+
+# 排序
+select * from info order by id asc ;#升序
+select * from info order by id,password desc ;#降序,首先是id之后考虑password
+select * from info order by id asc,password desc ;
+
+create table info2(class varchar(10),grade varchar(10),sid int);
+drop table info2;
+insert into info2(class, grade,sid) VALUES('one','two',1),('one','three',2),('two','two',3);#记住使用的是单引号
+select * from info2;
+select * from info,info2 ;#笛卡尔积
+select * from info,info2 where info.info.id=info2.sid;
+
+# 内连接,两个表地位相同
+select * from info f inner join info2 s on f.id=s.sid;#标准查询方式,后面气的是别名
+# 外连接,两个表地位不一样
+select * from info f left outer  join info2 s on f.id=s.sid;#此时以左表为主体,右表就有查询不出来的结果
+select * from info f right outer  join info2 s on f.id=s.sid;#此时没有查询不出来的结果
+select * from info;
+insert into info(username, password, id) values ('jiu','456',4);
+
+# 分组查询
+select password,sum(id) from info group by password;
+select count(*),password from info group by password;
+select sum(id),count(*),password from info where id>2 group by password;
+select sum(id),password from info  group by password having sum(id)>3;
+
+# limit语句
+select * from info limit 1,3;#表示的是从第一行开始查询3个
+
+-- auto-generated definition
+create schema Ana1 collate utf8_general_ci;
+use Ana1;
+show tables ;
+#添加外键的方式
+create table info1 (iid int,score int,grade varchar(10),constraint fk_info1_fk foreign key(iid) references info(id));
+#简写方式
+create table info1 (iid int,score int,grade varchar(10),sid int references info(id));
+select * from info1;
+desc info;
+alter table info add id int primary key ;
+insert into info(username, password, id) values ('ana','234',3);
+
+# 多表查询
+#   1.合并结果集:union去除重复记录 union all表示不去除重复记录
+drop table info1;
+create table info1 (password varchar(10),iid int,grade varchar(10),constraint fk_info1_fk foreign key(iid) references info(id));
+insert into info1(password,iid,grade) values ('234',3,'one'),('235',3,'two');
+#此时需要注意对应的列最好是相同的含义,表示的就是两个表纵向拼接在一起
+select * from info1 union select * from info;
+select * from info union all select * from info1;
+#   2.连接查询:指的就是求出多个表的乘积,乘法分配律,但是出来的很多结果是没有意义的数据
+#     inner join on内连接:特点是查询结果必须要满足相应的条件,两个表地位是相等的
+select * from info i1 inner join Ana1.info1 i2 on i1.id != i2.iid;
+
+#     outer join on外连接:特点是查询结果存在不满足条件的可能性
+
+#        left outer join左连接:表示的是先查询出来坐表,就是先以左表为基础,之后再查询右表,由表里面满足条件的显示,不满足的就不显示
+select * from info i1 left outer join Ana1.info1 i2 on i1.id =i2.iid;
+#        right outer join
+select * from info i1 right outer join Ana1.info1 i2 on i1.id =i2.iid;
+
+#   3.子查询
+# 想要表示的意思就是一个select语句里面是如何包含其他的select语句
+-- auto-generated definition
+create schema info collate utf8mb4_0900_ai_ci;
+use info;
+show tables ;
+
+#                  子查询
+# 查询密码大于ana的人
+select password from info where username='nancy';#第一步表示查询ana的密码,需要注意的是只能返回的是一行
+select * from info where password>(select password from info where username='nancy');#第二部表示的就是车讯高于ana的员工
+# 查询和nancy相同密码的员工
+select password from info where username='nancy';
+select * from info where password=(select password from info where username='nancy');
+# 查询密码大于id=2所有的员工信息
+select max(password) from info where id=2;
+select * from info where password>(select max(password) from info where id=2);
+select * from info where password>all (select password from info where id=2);#用法结果和上面是相同的,换成any表示的就是大于最小值
+
+select * from (select password from info where id>2 ) as b ;#报错的原因是后面的表需要加上as b
+
+
+# 聚合函数
+# 1.count
+select count(*) as ctn from info;#此时表示的是一共有多少个行记录
+select count(password) as ctn from info;#表示的是查询表中含有密码的行数,也就是只统计password的非null行数
+select count(*) from info where password>123;
+select count(*) as ctn from info where password+ifnull(id,0)>123;
+select count(password) ,count(id) from info;
+select sum(password) from info;
+select avg(password) from info;
+select max(password) from info;
+
+# 分组查询
+
+
+

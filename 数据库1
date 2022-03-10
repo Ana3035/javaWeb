@@ -1,0 +1,176 @@
+DDL表示的是数据定义语言
+主要是用来完成对于数据库对象(数据库,数据表,视图,索引等)的创建,删除以及修改
+DML表示对数据表的添加删除修改
+DQL表示的是查询数据库中的语言
+DCL表示的是对于数据库实现管理的操作
+
+DDL:
+1.创建数据库
+create database info
+2.修改数据库
+alter database info charactor set gbk;表示的是设置字符类型
+3.删除数据库
+drop database if exits info
+
+use info使用这个数据表
+
+对于数据表的操作:
+如果是由多个单词组成的,那么需要下划线
+char表示的是定长字符串,varchar表示的是可变字符串,后面加上not null表示的就是必须要写上数据,再加上unique表示的就是只能是唯一的
+create table students(
+    stu_num char(8) not null unique ,
+    stu_name varchar(10) not null ,
+    stu_gender char(2) not null ,
+    stu_age int not null ,
+    stu_tel char(11) not null unique ,
+    stu_qq varchar(10)
+);
+desc students;#表示的是查询表的具体信息
+
+
+4.修改数据表
+# 修改数据表
+alter table students rename to stus;#改表名
+alter table stus add stu_remark varchar(200);#增加列
+alter table stus change stu_remark stu_desc text;#修改列名以及类型
+alter table stus modify stu_desc varchar(200);#修改字段类型
+alter table stus drop stu_desc;#删除字段
+
+5.数据字段类型
+数值类型:
+tinyint
+smallint
+
+字符类型:
+
+日期类型:
+data 2021-1-1
+time 11:12:12
+year 2021
+datetime 上面两个相加
+timestamp 时间戳
+
+
+6.字段约束
+非空约束not null:限制此列绝对不能为空
+唯一约束unique:多条数据中,不能含有重复的值
+主键约束primary key:非空加唯一,就是唯一表示出一个记录,唯一标识
+外键约束foreign key:建立不同表之间的关联关系
+一张表最多只能有一个主键
+
+alter table stus drop primary key ;#删除主键
+alter table stus modify stu_name char(8) primary key ;#添加主键约束
+
+如果数据表中没有适合做主键的,可以单独为其设置字段一个id主键,使其自动增长,此列没有具体的含义,可以定义为int.
+当向数据表中新的数据的时候,就不需要增加id的值,直接给出其他字段的值
+alter table stus add id int primary key auto_increment;
+注意:
+自动增长只保证唯一性,不保证连续性,即把3删除之后,下一个创建的就是4
+
+联合主键:
+表示的就是在第三张表中存在其他两张表中的主键字段,此时这两个主键字段不适合作为第三张表的主键,此时这两个主键就叫做联合主键
+多列作为主键
+定义联合主键:
+create table content(
+    id int not null unique,
+    iid int not null unique ,
+    grades varchar(10),
+    primary key (id,iid)//只能有这一个写法
+);但是用的不多
+
+
+DML:用于完成对鼠标表中数据的操作
+insert into stus(这里可以是指定的列) values但是需要注意的是指定不能为空的一定要添加
+列的顺序可以不和表里面一样,但是values里面的值必须是和前面相对应的
+但是在项目开发中,最好是将所有的都写出来,增强代码的稳定性
+删除:
+delete from stus where id=1表示从表中删除满足条件的数据
+delete from stus表示的是删除整个表数据,但是表还在
+修改:
+#表示的是将id等于6的修改名字成nannan
+update stus set stu_name='nannan' where id=6;
+update stus set stu_name='nann',stu_age=35 where id=6;#中间是逗号
+如果update没有where,表示的是修改当前表中的所有行数据
+
+DQL从数据表中截取特定条件的记录
+select stu_age,stu_name from stus;表示的是查询指定的列
+
+#多条件查询
+select * from stus where id<9 and stu_age<35;#and表示条件同时满足
+select * from stus where id<9 or stu_age<23;#or表示满足一个条件就行
+select * from stus where stu_age between 20 and 30;#表示区间查询
+select * from stus where stu_age not between 20 and 30;#表示区间查询取反
+select * from stus where stu_qq like '%8_';#相当于一个正则表达式,模糊查询
+#%表示任意多个字符,_表示任意一个字符
+
+#分组查询
+就是将数据表中的数据按照指定的列进行分组
+select 分组字段/聚合函数 from group by 分组字段
+语句执行顺序:where>group by>having>order by
+select stu_gender,count(stu_num) from stus group by stu_gender having count(stu_num)>1 order by stu_gender desc ;
+没有group by绝对不能有having
+
+#分页查询
+数据较多的时候,一次性查询出来体验感不好,因此最好分页展示,
+limit num,num一定是放在最后面,第一个数字表示的是获取第一条,从0开始,第二个表示的是从第一条开始显示几行
+select * from stus limit 0,3;#表示的是一页只显示3行
+select * from stus limit 3*(n-1),3;#表示的是一页只显示3行,从第四行开始
+
+mysql是一个关系型数据库,不仅可以存储数据,还可以维护数据与数据之间的关系
+可以通过外键的关联关系来建立表与表之间的关联关系
+数据与数据之间的关系:
+一对一
+人-身份证号码
+一对多
+学生-班级
+多对一
+多对多
+
+1.建立表与表之间的一对一关联(主键关联
+两张表中主键的值是相同的,分别是1,2,3那么值就是对应的
+一张表与另一张表关联:在一张表中添加一个外键,要求外键中增加的值必须和另一张表中的主键值是相同的,要是的是是一一对应的
+那么必须设置为unique
+
+2.一对多,多对一
+在n的一端添加外键,与一的主键来进行关联
+
+3.多对多
+学生和课程
+创建第三张表(关系表),来维护多对多的关联,表中分别含有两张表中的主键,含有两个外键,之后乘法分配律
+还可以在第三张表中自行创建一个新的主键
+
+外键约束,指的是当一个字段添加外键约束与其他表的主键进行关联之外,此外键约束的字段添加的数据,必须要在关联的表中找到
+案例:学生表和班级表
+create table classes(
+    class_id int primary key auto_increment,
+    class_name varchar(10) not null unique ,
+    class_remark varchar(200)
+);
+create table students(
+    stu_num char(8) primary key ,
+    stu_name varchar(20) not null ,
+    stu_gender char(2) not null ,
+    stu_age int not null ,
+    cid int ,
+    #下面的表示就是添加一个外键约束
+    constraint fk_stu_class foreign key(cid) references classes(class_id)
+);
+insert into classes(class_name, class_remark) VALUES ('java2012','yi'),('java2013','di'),
+                                                     ('python2012','ci'),('python2013','ji');
+desc classes;
+#设置cid的值必须在主表中存在
+insert into students(stu_num, stu_name, stu_gender, stu_age,cid) VALUES ('1','ana','女',12,1),('2','nan','男',12,2),('3','nanan','女',12,3),('4','kang','男',12,2),('5','nancy','女',12,2);
+
+创建表之后设置外键:
+alter table students add constraint fk_stu_class foreign key (cid) references classes(class_id)
+删除外键
+alter table students drop foreign key fk_stu_class
+只要有外键关联到一个表的主键,那么这个主键就是不可以修改的,如果想要修改的话,
+首先:update students set cid=null where cid=1,此时表示的是取消引用
+update class set class_id=5 where class_name=java2012此时表示的就是修改主键
+最后update students set cid=5 where cid isnull
+
+内连接,外连接
+在企业的应用开发中,通常需要从多张表中查询树,所以需要链接查询
+可以使用join关键字实现多表的链接查询
+按功能分为inner join,left join ,right join

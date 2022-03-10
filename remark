@@ -1,0 +1,51 @@
+desc stus;
+alter table stus modify stu_tel char(11);#此处表示的是设置可以为空
+delete from stus where id=1;
+delete from stus;#表示的删除整个数据,但是表还在
+#表示的是将id等于6的修改名字成nannan
+update stus set stu_name='nannan' where id=6;
+update stus set stu_name='nann',stu_age=35 where id=6;
+
+select * from stus;#表示查询的是所有列的数据
+select stu_age,stu_name from stus;
+select * from stus where id=7;
+select * from stus where id!=7;
+select * from stus where id<>7;#此处表示的也是不等于
+
+#多条件查询
+select * from stus where id<9 and stu_age<35;#and表示条件同时满足
+select * from stus where id<9 or stu_age<23;#or表示满足一个条件就行
+select * from stus where stu_age between 20 and 30;#表示区间查询
+select * from stus where stu_age not between 20 and 30;#表示区间查询取反
+select * from stus where stu_qq like '%8_';#相当于一个正则表达式,模糊查询
+#%表示任意多个字符,_表示任意一个字符
+
+#对结果的处理
+select stu_age from stus where id=9;
+select 2022-stu_age as year from stus where id=9;
+select distinct stu_age from stus;#表示的是消除重复行
+
+#聚合函数,就是对结果可以进行计算的函数
+#1.count
+select count(stu_num) from stus where stu_gender='女';
+#2.max/min
+select max(stu_qq) from stus where stu_gender='男';
+#3.sum
+select sum(stu_qq) from stus where stu_gender='男';
+#4.avg
+select avg(stu_qq) from stus where stu_gender='男';
+
+#字符串函数
+select concat(stu_name,stu_age) from stus;#表示字符串的拼接操作
+select upper(stu_name) from stus;
+select lower(stu_name) from stus;
+select substring(stu_tel,2,3) from stus;
+select substr(stu_tel,3) from stus;
+
+#分组查询
+select stu_gender from stus group by stu_gender;#此时才是正确的,前面的字段需要和后面的相同
+select count(stu_gender) from stus group by stu_gender;#先分组后统计
+select stu_gender,count(stu_gender) from stus group by stu_gender;
+select stu_gender,count(stu_num) from stus group by stu_gender;
+select stu_gender,count(stu_num) from stus group by stu_gender order by stu_gender desc ;
+select stu_gender,count(stu_num) from stus group by stu_gender having count(stu_tel)>1234 order by stu_gender desc ;

@@ -1,0 +1,120 @@
+DBMS数据库管理系统 mysql是关系型数据库
+终端唤醒mysql:/usr/local/mysql/bin/mysql -uroot -p
+182515131
+show global variables like 'port';表示的是查看端口号
+
+idea链接数据库:名字输入的是root,数据库名字可以自己新创建,
+CRUD增删改查
+create read update delete
+DDL(小笔 表示的是数据库定义语言,用来定义数据库的对象:库,表,列等
+DML(QL  表示的是数据库操作语言,用来定义数据库的记录,增删改
+DQL数据库查询语言,用来查询记录
+
+int表示的是整形,double表示的是浮点型,double(5,2)表示的就是最多五位其中必须有两个小数,即111.11
+char表示的是固定长度的字符串类型,char(10) '222'表示的是占10位的字符
+varchar表示的是可变长度的字符串 varchar(10) 'aaa'表示的是占3位
+text表示的是大文本字符串类型
+blob表示的是字节类型
+date表示日期类型
+time表示的是时间类型
+timestamp表示的是时间戳
+datetime
+
+primary key表示的额是主键约束
+unique key表示的唯一约束
+foreign key表示外键约束
+
+delete truncate
+第一个表示删除表里面的数据,但是表的结构还在,删除以后的数据还可以找到
+第二个表示的是直接把表删除,再创建一个相同的表,删除的数据不能够找回
+
+查询语法
+select 列名 from 表名 where groupby having orderdby limit
+任何结果和null相加的结果还是null
+
+表的连接
+表的乘积,乘法分配律,笛卡尔积
+左连接表示的是先查询出来坐标,就是以左表为主表,之后查询右表,右表中满足条件的显示出来,不满足的显示null
+
+having和where的区别:
+having表示的是分组之后再对数据进行过滤,where表示的是分组之前
+having后面可以使用分组函数(统计函数,where后面不可以使用
+如果某一行记录没有满足where子句的条件,那么这行记录就不会参加分组,而having表示的则是对分组后数据的约束
+
+limit用来限制查询结果的起始行以及总的行数
+
+查询语句的书写顺序:select-from-where-groupby-having-order by-limit
+执行顺序:from-where-group by-having-select-order by-limit
+
+一般不会直接写double 写出来的是double(m,d)前一个表示长度,后一个表示小数的位数,double(3,2)表示的就是-9.99到9.99
+tinyblob表示的是不超过255个字符的二进制字符
+blob表示二进制的长文本数据 text就是长文本数据
+char最大的是255
+name varchar(20) not null表示的是数据的类型绝对不能为空
+id int primary key auto_increment表示的就是设置主键,且自动增长
+
+外键约束:
+多表约束是通过外键约束
+多表原则:
+1.一对多:在多的一方创建一个字段,字段作为外键指向另一方的主键(客户和订单,一个客户多个订单,一个订单只有一个客户
+    此时在订单创建外键指向客户的主键
+2.多对多:需要创建第三方表,中间表中至少含有两个字段,分别作为外键指向各自一方的主键(课程和学生
+
+聚合函数:
+count统计指定列不为null的记录行数
+max求出指定列的最大值
+min最小值,上述两个如果是字符串类型,则是按照字符串排序来进行运算
+sum,列和,但是如果列不是数值类型,那么返回的就是null
+avg平均值,同上
+
+子查询出现的位置:
+1.where的后面,作为条件被当做成被查询条件的一部分
+2.from后面,被当成一个表
+当子查询出现在where后面被当成条件的时候,还可以继续使用any all等关键字
+子查询结果的形式:单行单列,单行多列,多行单列,多行多列
+
+导入导出数据库:
+导出
+终端输入:mysqldump -uroot -p 数据库名字 >输出地方的名字 数据库.sql
+locate mysqldump
+/Applications/Utilities/MySQLWorkbench.app/Contents/MacOS/mysqldump -uroot -p info>/Users/zan/Desktop/info.sql
+数据库密码
+
+导入:
+/usr/local/mysql/bin/mysql -uroot -p
+use info
+source 数据库路径名
+
+创建账号与授权:
+create user "ana" identified by '123'//创建用户
+grant all on info.* to 'ana'//授权
+revoke all on info.* from 'ana'//撤销授权
+drop user 'ana'
+
+create user 'ana' identified by '115303'
+
+JDBC(java database connection表示的是一种用来执行sql的java api,可以用来为多种
+关系数据库提供统一的访问接口,是由一组java语言编写的类和关系的接口组成
+JDBC的核心组件:
+drivermanager此类用来管理数据库驱动程序列表,使用通信协议来使得来自java应用程序的连接请求与合适的驱动程序相匹配
+driver此接口处理与数据库服务器的通信,但是通常是使用drivermanager对象来管理此种类型的对象
+connection此接口具有用于联系数据库的所有方法,链接对象表示通信的上下文
+statement使用这种接口创建的独享将sql语句提交到数据库,除了执行储存过程之外,一些派生类的接口还提供了参数
+resultset此对象保存从数据库中检索出来的数据,作为一个迭代器,能够移动数据
+
+maven下载mysqlconnectorjava,之后Class.forName("com.mysql.cj.jdbc.Driver");
+connection= (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/info","root","182515131");
+                System.out.println("链接成功");
+
+sql注入:
+表示的就是通过sql命令插入到web表单提交或者输入域名或者页面请求的查询字符串,最终达到欺骗服务器的
+恶意命令,就是不是按照设计者的意图来执行sql语句,此时需要preparedstatement
+JDBC中所有的参数都是由?来表示,此称为参数标记,在执行sql语句之前,需要为每个参数提供相应的值
+而setXXX()方法将所给的值绑定到参数上面,XXX表示的是需要绑定到输入参数的java数据类型,而每一个参数标记是由顺序位置来提供
+预编译安全且执行效率高
+
+批处理:
+statement=connection.createStatement();
+connection.setAutoCommit(false);
+String sql="insert into info(username,password) values ('didi','345')";
+statement.addBatch(sql);
